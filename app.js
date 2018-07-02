@@ -6,13 +6,12 @@ const cookieParser  = require('cookie-parser');
 const logger        = require('morgan');
 const cors          = require('cors')
 const jwt           = require('jsonwebtoken')
+const app           = express();
 
 const indexRouter   = require('./routes/index')
 const todoRouter    = require('./routes/todo')
 const userRouter    = require('./routes/user')
 const weatherRouter = require('./routes/weather')
-
-const app           = express();
 
 //mongoose connection
 const mongoose      = require('mongoose')
