@@ -141,9 +141,9 @@ module.exports   = {
               res.status(200).json({
                 message: 'Success login',
                 token: token,
-                name: req.body.name,
-                email: userData.email,
-                phone: userData.phone
+                name: response.name,
+                email: response.email,
+                phone: response.phone
               })
             })
             .catch(function (err) {
