@@ -1,12 +1,12 @@
 require('dotenv').config()
 const createError   = require('http-errors');
 const express       = require('express');
+const app           = express();
 const path          = require('path');
 const cookieParser  = require('cookie-parser');
 const logger        = require('morgan');
 const cors          = require('cors')
 const jwt           = require('jsonwebtoken')
-const app           = express();
 
 const indexRouter   = require('./routes/index')
 const todoRouter    = require('./routes/todo')
@@ -15,7 +15,7 @@ const weatherRouter = require('./routes/weather')
 
 //mongoose connection
 const mongoose      = require('mongoose')
-const dbUrl         = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@ds247670.mlab.com:47670/todo`;
+const dbUrl         = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@ds125602.mlab.com:25602/app-portofolio`;
 mongoose.connect(dbUrl, (err) => {
   if(!err) {
     console.log('success connected to database');

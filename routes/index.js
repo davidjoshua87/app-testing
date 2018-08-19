@@ -1,13 +1,13 @@
 const router = require('express').Router();
 const index  = require('../controllers/index_controller')
 
-//route login
+// route login
 router.post('/login', index.loginUser);
 
-//route register
+// route register
 router.post('/register', index.registerUser);
 
-//route FB Login
+// route FB Login
 router.post('/loginfb', index.loginFB);
 
 module.exports = router

@@ -3,52 +3,79 @@ const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const saltRounds = 10;
 
-
-module.exports = {
+module.exports   = {
   registerUser: function (req, res) {
-    let password   = req.body.password;
+    let name = req.body.name
+    let phone = req.body.phone
+    let email = req.body.email
+    let password = req.body.password;
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    let letter     = /[a-zA-Z]/;
-    let number     = /[0-9]/;
-    if (password.length < 6) {
+    let letter = /[a-zA-Z]/;
+    let number = /[0-9]/;
+    if (number.test(name)) {
+      res.status(400).json({
+        message: 'Name must be alphabet'
+      })
+    } else if (!regexEmail.test(email)) {
+      res.status(400).json({
+        message: 'Email is wrong format'
+      })
+    } else if (phone.length < 10) {
+      res.status(400).json({
+        message: 'Phone minimal 10 digit number'
+      })
+    } else if (!number.test(phone)) {
+      res.status(400).json({
+        message: 'Phone must be numeric'
+      })
+    } else if (password.length < 8) {
       res.status(400).json({
         message: 'Password too short!'
       })
-    } else if (!letter.test(password) && number.test(password)) {
+    } else if (!letter.test(password) && !number.test(password)) {
       res.status(400).json({
         message: 'Password must be alphanumeric'
-      })
-    } else if (!letter.test(req.body.username)) {
-      res.status(400).json({
-        message: 'Username must be alphabet'
-      })
-    } else if (!regexEmail.test(req.body.email)) {
-      res.status(400).json({
-        message: 'Email is wrong format'
       })
     } else {
       users.findOne({
           email: req.body.email
         })
         .then(function (userData) {
-          if (userData != null) {
+          if (userData !== null) {
             res.status(400).json({
-              message: "Email has been taken!",
+              message: 'Email has been taken!',
             })
           } else {
-            let salt = bcrypt.genSaltSync(saltRounds)
-            let hash = bcrypt.hashSync(password, salt);
-            users
-              .create({
-                username: req.body.username,
-                email: req.body.email,
-                password: hash,
-                fbId: ''
+            users.findOne({
+                phone: req.body.phone
               })
-              .then(function (result) {
-                res.status(200).json({
-                  message: "success register a new user",
-                  result: result
+              .then(function (userData) {
+                if (userData !== null) {
+                  res.status(400).json({
+                    message: 'Phone number has been taken!'
+                  })
+                } else {
+                  let salt = bcrypt.genSaltSync(saltRounds)
+                  let hash = bcrypt.hashSync(password, salt);
+                  users
+                    .create({
+                      name: req.body.name,
+                      email: req.body.email,
+                      phone: req.body.phone,
+                      password: hash,
+                      fbId: ''
+                    })
+                    .then(function (result) {
+                      res.status(200).json({
+                        message: "success register a new user",
+                        result: result
+                      })
+                    })
+                }
+              })
+              .catch(function (err) {
+                res.status(500).json({
+                  message: err
                 })
               })
           }
@@ -62,18 +89,18 @@ module.exports = {
   },
   loginUser: function (req, res) {
     users.findOne({
-        username: req.body.username
+        email: req.body.email
       })
       .then(function (userData) {
         if (!userData) {
           res.status(400).json({
-            message: 'incorrect username or password'
+            message: 'incorrect email'
           })
         } else {
           bcrypt.compare(req.body.password, userData.password, function (err, result) {
             if (!result) {
               res.json({
-                message: 'incorrect username or password'
+                message: 'incorrect password'
               })
             } else {
               let token = jwt.sign({
@@ -82,8 +109,9 @@ module.exports = {
               res.json({
                 message: 'Success login',
                 token: token,
-                username: userData.username,
-                email: userData.email
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone
               })
             }
           })
@@ -92,7 +120,7 @@ module.exports = {
   },
   loginFB(req, res) {
     users.findOne({
-        username: req.body.username
+        email: req.body.email
       })
       .then(function (userData) {
         if (!userData) {
@@ -100,8 +128,9 @@ module.exports = {
           let salt = bcrypt.genSaltSync(saltRounds);
           let hash = bcrypt.hashSync(pass, salt);
           users.create({
-              username: req.body.username,
+              name: req.body.name,
               email: req.body.email,
+              phone: req.body.phone,
               password: hash,
               fbId: req.body.fbId
             })
@@ -112,8 +141,9 @@ module.exports = {
               res.status(200).json({
                 message: 'Success login',
                 token: token,
-                username: req.body.username,
-                email: userData.email
+                name: req.body.name,
+                email: userData.email,
+                phone: userData.phone
               })
             })
             .catch(function (err) {
@@ -130,8 +160,9 @@ module.exports = {
           res.status(200).json({
             message: 'Success login',
             token: token,
-            username: userData.username,
-            email: userData.email
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone
           })
         }
       })

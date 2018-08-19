@@ -17,9 +17,8 @@ module.exports = {
       }
       res.status(200).json({
         message: 'Success get weather data!',
-        data: result
+        data: result[0].current
       })
-      console.log(result)
     });
   },
   getWeatherByAddress(address) {
