@@ -124,6 +124,7 @@ module.exports   = {
       })
       .then(function (userData) {
         if (!userData) {
+          let password = req.body.password
           let salt = bcrypt.genSaltSync(saltRounds);
           let hash = bcrypt.hashSync(password, salt);
           users.create({
