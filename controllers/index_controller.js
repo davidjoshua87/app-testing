@@ -124,9 +124,8 @@ module.exports   = {
       })
       .then(function (userData) {
         if (!userData) {
-          let pass = String(Math.random() * 999999);
           let salt = bcrypt.genSaltSync(saltRounds);
-          let hash = bcrypt.hashSync(pass, salt);
+          let hash = bcrypt.hashSync(password, salt);
           users.create({
               name: req.body.name,
               email: req.body.email,
